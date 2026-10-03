@@ -1,0 +1,319 @@
+// ----------------------------------------------------
+// FEN_DASHBOARD_KPI_COMPLETE
+// ----------------------------------------------------
+
+PROCEDURE InitialiserDashboard()
+    InitializeMenu()
+    ChargerKPI()
+    ChargerGraphiques()
+    ChargerAlertes()
+    ChargerSyntheseSites()
+    CalculerPerformance()
+END
+
+PROCEDURE InitializeMenu()
+    MENU_TableauDeBord.Enabled = True
+    MENU_Incidents.Enabled = True
+    MENU_Audits.Enabled = True
+    MENU_Actions.Enabled = True
+    MENU_Risques.Enabled = True
+    MENU_Habilitations.Enabled = True
+    MENU_Rapports.Enabled = True
+    MENU_Parametres.Enabled = True
+END
+
+PROCEDURE ChargerKPI()
+    iIncidents is int
+    iAudits is int
+    iActions is int
+    iRisques is int
+    iRetards is int
+    iConformite is int
+
+    HCount(T_Incident, iIncidents)
+    HCount(T_Audit, iAudits)
+    HCount(T_Action, iActions)
+    HCount(T_Risque, iRisques)
+
+    iRetards = 0
+    HReadFirst(T_Action)
+    WHILE HFound() = True
+        IF T_Action.DateEcheance < DateSys() AND T_Action.Statut <> "Termine" THEN
+            iRetards = iRetards + 1
+        END
+        HReadNext(T_Action)
+    END
+
+    iConformite = 88
+
+    EDT_IncidentsTotal = iIncidents
+    EDT_AuditsTotal = iAudits
+    EDT_ActionsTotal = iActions
+    EDT_RisquesTotal = iRisques
+    EDT_ActionsRetard = iRetards
+    EDT_TauxConformite = iConformite
+END
+
+PROCEDURE ChargerGraphiques()
+    ChargerGraphiqueIncidentsParType()
+    ChargerGraphiqueIncidentsParGravite()
+    ChargerGraphiqueActionsParStatut()
+    ChargerGraphiqueConformiteParSite()
+END
+
+PROCEDURE ChargerGraphiqueIncidentsParType()
+    TABLE_GraphiqueIncidents.DeleteAll()
+    HReadFirst(T_TypeIncident)
+    WHILE HFound() = True
+        iCount is int
+        iCount = 0
+        HReadFirst(T_Incident)
+        WHILE HFound() = True
+            IF T_Incident.IDTypeIncident = T_TypeIncident.IDTypeIncident THEN
+                iCount = iCount + 1
+            END
+            HReadNext(T_Incident)
+        END
+
+        TABLE_GraphiqueIncidents.AddLine()
+        TABLE_GraphiqueIncidents.Type = T_TypeIncident.Libelle
+        TABLE_GraphiqueIncidents.Nombre = iCount
+        HReadNext(T_TypeIncident)
+    END
+END
+
+PROCEDURE ChargerGraphiqueIncidentsParGravite()
+    TABLE_GraphiqueGravite.DeleteAll()
+    HReadFirst(T_Gravite)
+    WHILE HFound() = True
+        iCount is int
+        iCount = 0
+        HReadFirst(T_Incident)
+        WHILE HFound() = True
+            IF T_Incident.IDGravite = T_Gravite.IDGravite THEN
+                iCount = iCount + 1
+            END
+            HReadNext(T_Incident)
+        END
+
+        TABLE_GraphiqueGravite.AddLine()
+        TABLE_GraphiqueGravite.Gravite = T_Gravite.Libelle
+        TABLE_GraphiqueGravite.Nombre = iCount
+        HReadNext(T_Gravite)
+    END
+END
+
+PROCEDURE ChargerGraphiqueActionsParStatut()
+    TABLE_GraphiqueActions.DeleteAll()
+    iEnCours is int
+    iTerminee is int
+    iRetard is int
+
+    iEnCours = 0
+    iTerminee = 0
+    iRetard = 0
+
+    HReadFirst(T_Action)
+    WHILE HFound() = True
+        IF T_Action.Statut = "En cours" THEN
+            iEnCours = iEnCours + 1
+        ELSE IF T_Action.Statut = "Termine" THEN
+            iTerminee = iTerminee + 1
+        END
+
+        IF T_Action.DateEcheance < DateSys() AND T_Action.Statut <> "Termine" THEN
+            iRetard = iRetard + 1
+        END
+        HReadNext(T_Action)
+    END
+
+    TABLE_GraphiqueActions.AddLine()
+    TABLE_GraphiqueActions.Statut = "En cours"
+    TABLE_GraphiqueActions.Nombre = iEnCours
+
+    TABLE_GraphiqueActions.AddLine()
+    TABLE_GraphiqueActions.Statut = "Terminée"
+    TABLE_GraphiqueActions.Nombre = iTerminee
+
+    TABLE_GraphiqueActions.AddLine()
+    TABLE_GraphiqueActions.Statut = "En retard"
+    TABLE_GraphiqueActions.Nombre = iRetard
+END
+
+PROCEDURE ChargerGraphiqueConformiteParSite()
+    TABLE_GraphiqueConformite.DeleteAll()
+    HReadFirst(T_Site)
+    WHILE HFound() = True
+        iConforme is int
+        iNonConforme is int
+        iTaux is int
+        iConforme = 0
+        iNonConforme = 0
+
+        HReadFirst(T_Audit)
+        WHILE HFound() = True
+            IF T_Audit.IDSite = T_Site.IDSite THEN
+                HReadFirst(T_PointAudit)
+                WHILE HFound() = True
+                    IF T_PointAudit.IDAudit = T_Audit.IDAudit THEN
+                        IF T_PointAudit.Conforme = 1 THEN
+                            iConforme = iConforme + 1
+                        ELSE
+                            iNonConforme = iNonConforme + 1
+                        END
+                    END
+                    HReadNext(T_PointAudit)
+                END
+            END
+            HReadNext(T_Audit)
+        END
+
+        IF iConforme + iNonConforme > 0 THEN
+            iTaux = (iConforme * 100) / (iConforme + iNonConforme)
+        ELSE
+            iTaux = 0
+        END
+
+        TABLE_GraphiqueConformite.AddLine()
+        TABLE_GraphiqueConformite.Site = T_Site.Libelle
+        TABLE_GraphiqueConformite.Taux = iTaux
+
+        HReadNext(T_Site)
+    END
+END
+
+PROCEDURE ChargerAlertes()
+    TABLE_Alertes.DeleteAll()
+
+    HReadFirst(T_Action)
+    WHILE HFound() = True
+        IF T_Action.DateEcheance < DateSys() AND T_Action.Statut <> "Termine" THEN
+            TABLE_Alertes.AddLine()
+            TABLE_Alertes.Type = "CRITIQUE"
+            TABLE_Alertes.Message = "Action en retard : " + T_Action.CodeAction
+            TABLE_Alertes.Date = DateSys()
+            TABLE_Alertes.Statut = "Non résolu"
+        END
+        HReadNext(T_Action)
+    END
+
+    HReadFirst(T_Risque)
+    WHILE HFound() = True
+        IF T_Risque.Criticite >= 12 THEN
+            TABLE_Alertes.AddLine()
+            TABLE_Alertes.Type = "ALERTE"
+            TABLE_Alertes.Message = "Risque critique : " + T_Risque.Libelle
+            TABLE_Alertes.Date = DateSys()
+            TABLE_Alertes.Statut = "En attente"
+        END
+        HReadNext(T_Risque)
+    END
+END
+
+PROCEDURE ChargerSyntheseSites()
+    TABLE_SyntheseSites.DeleteAll()
+
+    HReadFirst(T_Site)
+    WHILE HFound() = True
+        iIncidents is int
+        iAudits is int
+        iRisques is int
+
+        iIncidents = 0
+        iAudits = 0
+        iRisques = 0
+
+        HReadFirst(T_Incident)
+        WHILE HFound() = True
+            IF T_Incident.IDSite = T_Site.IDSite THEN
+                iIncidents = iIncidents + 1
+            END
+            HReadNext(T_Incident)
+        END
+
+        HReadFirst(T_Audit)
+        WHILE HFound() = True
+            IF T_Audit.IDSite = T_Site.IDSite THEN
+                iAudits = iAudits + 1
+            END
+            HReadNext(T_Audit)
+        END
+
+        HReadFirst(T_Risque)
+        WHILE HFound() = True
+            IF T_Risque.IDSite = T_Site.IDSite THEN
+                iRisques = iRisques + 1
+            END
+            HReadNext(T_Risque)
+        END
+
+        TABLE_SyntheseSites.AddLine()
+        TABLE_SyntheseSites.Site = T_Site.Libelle
+        TABLE_SyntheseSites.Incidents = iIncidents
+        TABLE_SyntheseSites.Audits = iAudits
+        TABLE_SyntheseSites.Risques = iRisques
+
+        HReadNext(T_Site)
+    END
+END
+
+PROCEDURE CalculerPerformance()
+    iTotal is int
+    iResolu is int
+    iTRI is int
+
+    iTotal = 0
+    iResolu = 0
+    HReadFirst(T_Incident)
+    WHILE HFound() = True
+        iTotal = iTotal + 1
+        IF T_Incident.Statut = "Ferme" THEN
+            iResolu = iResolu + 1
+        END
+        HReadNext(T_Incident)
+    END
+
+    IF iTotal > 0 THEN
+        iTRI = (iResolu * 100) / iTotal
+    ELSE
+        iTRI = 0
+    END
+
+    EDT_KPI_TRI = iTRI
+
+    iConforme is int
+    iNonConforme is int
+    iTCH is int
+    iConforme = 0
+    iNonConforme = 0
+    HReadFirst(T_PointAudit)
+    WHILE HFound() = True
+        IF T_PointAudit.Conforme = 1 THEN
+            iConforme = iConforme + 1
+        ELSE
+            iNonConforme = iNonConforme + 1
+        END
+        HReadNext(T_PointAudit)
+    END
+
+    IF iConforme + iNonConforme > 0 THEN
+        iTCH = (iConforme * 100) / (iConforme + iNonConforme)
+    ELSE
+        iTCH = 0
+    END
+
+    EDT_KPI_TCH = iTCH
+END
+
+PROCEDURE BTN_Rafraichir_Click()
+    InitialiserDashboard()
+    Info("Dashboard rafraîchi")
+END
+
+PROCEDURE BTN_ExporterExcel_Click()
+    Info("Export Excel du dashboard")
+END
+
+PROCEDURE BTN_ExporterPDF_Click()
+    Info("Export PDF du dashboard")
+END

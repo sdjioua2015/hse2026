@@ -1,0 +1,67 @@
+// ----------------------------------------------------
+// FEN_RAPPORTS_INDUSTRIAL
+// ----------------------------------------------------
+
+PROCEDURE GenererRapportExcelIndustrial()
+    sChemin is string
+    oExcel is Automation
+    oWorkbook is Automation
+    oWorksheet is Automation
+
+    sChemin = "C:\HSE\Rapports\Rapport_Industrial.xlsx"
+    oExcel = Automation.Open("Excel.Application")
+    oExcel.Visible = False
+    oWorkbook = oExcel.Workbooks.Add()
+    oWorksheet = oWorkbook.Worksheets[1]
+
+    oWorksheet.Cells[1, 1] = "RAPPORT HSE INDUSTRIEL"
+    oWorksheet.Cells[3, 1] = "Code"
+    oWorksheet.Cells[3, 2] = "Type"
+    oWorksheet.Cells[3, 3] = "Site"
+    oWorksheet.Cells[3, 4] = "Date"
+    oWorksheet.Cells[3, 5] = "Statut"
+
+    iLigne is int
+    iLigne = 4
+    HReadFirst(T_Incident)
+    WHILE HFound() = True
+        oWorksheet.Cells[iLigne, 1] = T_Incident.CodeIncident
+        oWorksheet.Cells[iLigne, 2] = T_Incident.IDTypeIncident
+        oWorksheet.Cells[iLigne, 3] = T_Incident.IDSite
+        oWorksheet.Cells[iLigne, 4] = T_Incident.DateIncident
+        oWorksheet.Cells[iLigne, 5] = T_Incident.Statut
+        iLigne = iLigne + 1
+        HReadNext(T_Incident)
+    END
+
+    oWorksheet.Columns.AutoFit()
+    oWorkbook.SaveAs(sChemin)
+    oWorkbook.Close(True)
+    oExcel.Quit()
+
+    Info("Rapport exporté vers Excel : " + sChemin)
+END
+
+PROCEDURE GenererRapportPDFIndustrial()
+    sHtml is string
+    sPdf is string
+
+    sHtml = "C:\HSE\Rapports\Rapport_Industrial.html"
+    sPdf = "C:\HSE\Rapports\Rapport_Industrial.pdf"
+
+    sContenu is string
+    sContenu = "<html><body><h1>Rapport HSE industriel</h1>"
+    sContenu += "<table border='1'><tr><th>Code</th><th>Type</th><th>Site</th><th>Statut</th></tr>"
+
+    HReadFirst(T_Incident)
+    WHILE HFound() = True
+        sContenu += "<tr><td>" + T_Incident.CodeIncident + "</td><td>" + T_Incident.IDTypeIncident + "</td><td>" + T_Incident.IDSite + "</td><td>" + T_Incident.Statut + "</td></tr>"
+        HReadNext(T_Incident)
+    END
+
+    sContenu += "</table></body></html>"
+    FileWrite(sHtml, sContenu)
+    ExecuteProcess("C:\Program Files\wkhtmltopdf\wkhtmltopdf.exe " + sHtml + " " + sPdf, 0)
+
+    Info("Rapport PDF généré : " + sPdf)
+END

@@ -1,0 +1,34 @@
+// ----------------------------------------------------
+// FEN_AUDITS_INDUSTRIAL
+// ----------------------------------------------------
+
+PROCEDURE AjouterAuditIndustrial()
+    sCode is string
+    sCode = "AUD-" + DateToString(DateSys(), "YYYYMMDD") + "-" + Random(100, 999)
+
+    HAdd(T_Audit)
+    T_Audit.CodeAudit = sCode
+    T_Audit.IDSite = COMBO_SiteAudit.Value
+    T_Audit.DateAudit = EDT_DateAudit
+    T_Audit.Responsable = EDT_ResponsableAudit
+    T_Audit.TypeAudit = COMBO_TypeAudit.Value
+    T_Audit.Statut = COMBO_StatutAudit.Value
+    T_Audit.Commentaire = EDT_CommentaireAudit
+    HSave(T_Audit)
+
+    IF HError() <> 0 THEN
+        Error("Erreur d'enregistrement de l'audit")
+    ELSE
+        Info("Audit enregistré")
+    END
+END
+
+PROCEDURE AjouterPointAuditIndustrial()
+    HAdd(T_PointAudit)
+    T_PointAudit.IDAudit = TABLE_Audits[TABLE_Audits.Position].IDAudit
+    T_PointAudit.Libelle = EDT_PointAudit
+    T_PointAudit.Conforme = CHECK_Conforme.Value
+    T_PointAudit.Observation = EDT_ObservationAudit
+    T_PointAudit.NiveauRisque = COMBO_NiveauRisque.Value
+    HSave(T_PointAudit)
+END

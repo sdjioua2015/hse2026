@@ -1,0 +1,58 @@
+// ----------------------------------------------------
+// FEN_INCIDENTS_INDUSTRIAL
+// ----------------------------------------------------
+
+PROCEDURE ChargerCombosIncident()
+    COMBO_TypeIncident.DeleteAll()
+    HReadFirst(T_TypeIncident)
+    WHILE HFound() = True
+        COMBO_TypeIncident.Add(T_TypeIncident.Libelle)
+        COMBO_TypeIncident.Value = T_TypeIncident.IDTypeIncident
+        HReadNext(T_TypeIncident)
+    END
+
+    COMBO_Gravite.DeleteAll()
+    HReadFirst(T_Gravite)
+    WHILE HFound() = True
+        COMBO_Gravite.Add(T_Gravite.Libelle)
+        COMBO_Gravite.Value = T_Gravite.IDGravite
+        HReadNext(T_Gravite)
+    END
+
+    COMBO_SiteIncident.DeleteAll()
+    HReadFirst(T_Site)
+    WHILE HFound() = True
+        COMBO_SiteIncident.Add(T_Site.Libelle)
+        COMBO_SiteIncident.Value = T_Site.IDSite
+        HReadNext(T_Site)
+    END
+END
+
+PROCEDURE AjouterIncidentIndustrial()
+    sCode is string
+    IF EDT_DateIncident = "" THEN
+        Error("La date est obligatoire")
+        RETURN
+    END
+
+    sCode = "INC-" + DateToString(DateSys(), "YYYYMMDD") + "-" + Random(1000, 9999)
+
+    HAdd(T_Incident)
+    T_Incident.CodeIncident = sCode
+    T_Incident.IDTypeIncident = COMBO_TypeIncident.Value
+    T_Incident.IDGravite = COMBO_Gravite.Value
+    T_Incident.IDSite = COMBO_SiteIncident.Value
+    T_Incident.DateIncident = EDT_DateIncident
+    T_Incident.HeureIncident = EDT_HeureIncident
+    T_Incident.Description = EDT_DescriptionIncident
+    T_Incident.CauseProbable = EDT_CauseProbable
+    T_Incident.MesuresImmediates = EDT_MesuresImmediates
+    T_Incident.Statut = "Ouvert"
+    HSave(T_Incident)
+
+    IF HError() <> 0 THEN
+        Error("Erreur lors de l'enregistrement")
+    ELSE
+        Info("Incident enregistré")
+    END
+END

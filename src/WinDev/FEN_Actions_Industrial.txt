@@ -1,0 +1,28 @@
+// ----------------------------------------------------
+// FEN_ACTIONS_INDUSTRIAL
+// ----------------------------------------------------
+
+PROCEDURE AjouterActionIndustrial()
+    sCode is string
+    sCode = "ACT-" + DateToString(DateSys(), "YYYYMMDD") + "-" + Random(100, 999)
+
+    HAdd(T_Action)
+    T_Action.CodeAction = sCode
+    T_Action.IDIncident = COMBO_IncidentAction.Value
+    T_Action.IDAudit = COMBO_AuditAction.Value
+    T_Action.Libelle = EDT_LibelleAction
+    T_Action.Description = EDT_DescriptionAction
+    T_Action.Responsable = EDT_ResponsableAction
+    T_Action.DateDebut = EDT_DateDebut
+    T_Action.DateEcheance = EDT_DateEcheance
+    T_Action.Statut = COMBO_StatutAction.Value
+    T_Action.Priorite = COMBO_Priorite.Value
+    T_Action.TypeAction = COMBO_TypeAction.Value
+    HSave(T_Action)
+
+    IF HError() <> 0 THEN
+        Error("Erreur lors de l'enregistrement")
+    ELSE
+        Info("Action enregistrée")
+    END
+END
