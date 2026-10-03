@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <name>HSE2026</name>
+  <version>1.0.0</version>
+  <description>Système de gestion HSE industriel - Production</description>
+  
+  <windows>
+    <window name="FEN_Login_Production" type="modal">
+      <controls>
+        <control name="EDT_Login" type="edit" caption="Login" width="300" height="40"/>
+        <control name="EDT_MotDePasse" type="password" caption="Mot de passe" width="300" height="40"/>
+        <control name="BTN_Connexion" type="button" caption="Connexion" width="150" height="40"/>
+        <control name="BTN_Quitter" type="button" caption="Quitter" width="150" height="40"/>
+      </controls>
+    </window>
+    
+    <window name="FEN_Dashboard_Production" type="regular">
+      <controls>
+        <control name="EDT_IncidentsTotal" type="display" label="Total Incidents"/>
+        <control name="EDT_AuditsTotal" type="display" label="Total Audits"/>
+        <control name="EDT_ActionsTotal" type="display" label="Total Actions"/>
+        <control name="EDT_RisquesTotal" type="display" label="Total Risques"/>
+        <control name="EDT_ActionsRetard" type="display" label="Actions en retard"/>
+        <control name="EDT_TauxConformite" type="display" label="Taux de conformité %"/>
+        <control name="TABLE_Alertes" type="table">
+          <column name="Type" width="100"/>
+          <column name="Message" width="300"/>
+          <column name="Date" width="100"/>
+          <column name="Statut" width="100"/>
+        </control>
+        <control name="TABLE_SyntheseSites" type="table">
+          <column name="Site" width="150"/>
+          <column name="Incidents" width="100"/>
+          <column name="Audits" width="100"/>
+          <column name="Risques" width="100"/>
+        </control>
+        <control name="TABLE_Evolution" type="table">
+          <column name="Mois" width="100"/>
+          <column name="Incidents" width="100"/>
+          <column name="Audits" width="100"/>
+          <column name="Actions" width="100"/>
+        </control>
+        <control name="BTN_OuvrirIncidents" type="button" caption="Incidents"/>
+        <control name="BTN_OuvrirAudits" type="button" caption="Audits"/>
+        <control name="BTN_OuvrirActions" type="button" caption="Actions"/>
+        <control name="BTN_OuvrirRisques" type="button" caption="Risques"/>
+        <control name="BTN_Deconnexion" type="button" caption="Déconnexion"/>
+      </controls>
+    </window>
+    
+    <window name="FEN_Incidents_Production" type="regular">
+      <controls>
+        <control name="EDT_DateIncident" type="date" caption="Date incident" width="200" height="30"/>
+        <control name="EDT_HeureIncident" type="time" caption="Heure" width="100" height="30"/>
+        <control name="COMBO_TypeIncident" type="combo" caption="Type incident" width="250"/>
+        <control name="COMBO_Gravite" type="combo" caption="Gravité" width="250"/>
+        <control name="COMBO_SiteIncident" type="combo" caption="Site" width="250"/>
+        <control name="EDT_DescriptionIncident" type="memo" caption="Description" width="400" height="100"/>
+        <control name="EDT_CauseProbable" type="memo" caption="Cause probable" width="400" height="80"/>
+        <control name="EDT_MesuresImmediates" type="memo" caption="Mesures immédiates" width="400" height="80"/>
+        <control name="EDT_CodeIncidentRecherche" type="edit" caption="Rechercher par code"/>
+        <control name="COMBO_StatutIncident" type="combo" caption="Statut"/>
+        <control name="TABLE_Incidents" type="table">
+          <column name="Code" width="120"/>
+          <column name="Date" width="100"/>
+          <column name="Type" width="100"/>
+          <column name="Site" width="100"/>
+          <column name="Statut" width="100"/>
+        </control>
+        <control name="BTN_AjouterIncident" type="button" caption="Ajouter incident"/>
+        <control name="BTN_RechercherIncident" type="button" caption="Rechercher"/>
+        <control name="BTN_FermerIncidents" type="button" caption="Fermer"/>
+      </controls>
+    </window>
+    
+    <window name="FEN_Audits_Production" type="regular">
+      <controls>
+        <control name="EDT_DateAudit" type="date" caption="Date audit" width="200" height="30"/>
+        <control name="COMBO_SiteAudit" type="combo" caption="Site" width="250"/>
+        <control name="EDT_ResponsableAudit" type="edit" caption="Responsable audit" width="250"/>
+        <control name="COMBO_TypeAudit" type="combo" caption="Type audit" width="250"/>
+        <control name="COMBO_StatutAudit" type="combo" caption="Statut" width="250"/>
+        <control name="EDT_CommentaireAudit" type="memo" caption="Commentaire" width="400" height="80"/>
+        <control name="EDT_PointAudit" type="edit" caption="Point de contrôle"/>
+        <control name="CHECK_Conforme" type="check" caption="Conforme"/>
+        <control name="EDT_ObservationAudit" type="memo" caption="Observation" width="300" height="60"/>
+        <control name="COMBO_NiveauRisque" type="combo" caption="Niveau risque"/>
+        <control name="TABLE_Audits" type="table">
+          <column name="Code" width="120"/>
+          <column name="Date" width="100"/>
+          <column name="Site" width="100"/>
+          <column name="Responsable" width="150"/>
+          <column name="Statut" width="100"/>
+        </control>
+        <control name="BTN_AjouterAudit" type="button" caption="Ajouter audit"/>
+        <control name="BTN_AjouterPointAudit" type="button" caption="Ajouter point"/>
+        <control name="BTN_FermerAudits" type="button" caption="Fermer"/>
+      </controls>
+    </window>
+    
+    <window name="FEN_Actions_Production" type="regular">
+      <controls>
+        <control name="EDT_LibelleAction" type="edit" caption="Libellé" width="300"/>
+        <control name="EDT_DescriptionAction" type="memo" caption="Description" width="400" height="80"/>
+        <control name="EDT_ResponsableAction" type="edit" caption="Responsable" width="250"/>
+        <control name="EDT_DateDebut" type="date" caption="Date début" width="150"/>
+        <control name="EDT_DateEcheance" type="date" caption="Date échéance" width="150"/>
+        <control name="COMBO_StatutAction" type="combo" caption="Statut" width="200"/>
+        <control name="COMBO_Priorite" type="combo" caption="Priorité" width="200"/>
+        <control name="COMBO_TypeAction" type="combo" caption="Type action" width="200"/>
+        <control name="TABLE_Actions" type="table">
+          <column name="Code" width="120"/>
+          <column name="Libelle" width="200"/>
+          <column name="Responsable" width="150"/>
+          <column name="DateEcheance" width="100"/>
+          <column name="Statut" width="100"/>
+        </control>
+        <control name="BTN_AjouterAction" type="button" caption="Ajouter action"/>
+        <control name="BTN_CloturerAction" type="button" caption="Clôturer"/>
+        <control name="BTN_FermerActions" type="button" caption="Fermer"/>
+      </controls>
+    </window>
+    
+    <window name="FEN_Risques_Production" type="regular">
+      <controls>
+        <control name="EDT_LibelleRisque" type="edit" caption="Libellé" width="300"/>
+        <control name="EDT_DescriptionRisque" type="memo" caption="Description" width="400" height="80"/>
+        <control name="COMBO_SiteRisque" type="combo" caption="Site" width="250"/>
+        <control name="COMBO_Probabilite" type="combo" caption="Probabilité" width="200"/>
+        <control name="COMBO_GraviteRisque" type="combo" caption="Gravité" width="200"/>
+        <control name="EDT_Criticite" type="display" caption="Criticité"/>
+        <control name="EDT_ResponsableRisque" type="edit" caption="Responsable" width="250"/>
+        <control name="TABLE_Risques" type="table">
+          <column name="Libelle" width="200"/>
+          <column name="Site" width="100"/>
+          <column name="Probabilite" width="80"/>
+          <column name="Gravite" width="80"/>
+          <column name="Criticite" width="80"/>
+          <column name="Statut" width="100"/>
+        </control>
+        <control name="BTN_AjouterRisque" type="button" caption="Ajouter risque"/>
+        <control name="BTN_FermerRisques" type="button" caption="Fermer"/>
+      </controls>
+    </window>
+  </windows>
+  
+  <database>
+    <type>SQL Server</type>
+    <name>HSE_DB</name>
+    <tables>
+      <table name="T_Utilisateur"/>
+      <table name="T_Incident"/>
+      <table name="T_Audit"/>
+      <table name="T_Action"/>
+      <table name="T_Risque"/>
+      <table name="T_Site"/>
+      <table name="T_Log"/>
+      <table name="T_Session"/>
+    </tables>
+  </database>
+  
+  <security>
+    <profiles>
+      <profile name="Admin" level="5"/>
+      <profile name="Responsable HSE" level="4"/>
+      <profile name="Superviseur" level="3"/>
+      <profile name="Utilisateur" level="2"/>
+    </profiles>
+  </security>
+</project>
