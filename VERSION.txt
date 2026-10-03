@@ -1,0 +1,42 @@
+HSE2026 - Version Production
+Released : 2026-10-03
+Build : 1.0.0
+
+Fichiers inclus :
+- Base de données SQL Server (HSE_DB_Production.sql)
+- Projet WinDev 2025 (hse2026.prj)
+- Écrans complets (HSE2026_PRODUCTION_COMPLETE.wl)
+- Thème visuel (HSE2026_THEME_VISUEL.wl)
+- Dashboard final (HSE2026_DASHBOARD.wl)
+- Documentation complète
+- Guide d'installation
+- Guide d'utilisation
+
+Modules inclus :
+1. Authentification et sécurité
+2. Dashboard KPI
+3. Gestion des incidents
+4. Gestion des audits
+5. Gestion des actions correctives
+6. Gestion des risques
+7. Rapports et statistiques
+8. Administration utilisateurs
+
+Comptes de test inclus :
+- admin / admin123
+- hse / hse123
+- superviseur / sup123
+- user / user123
+
+Architecture :
+- Client : WinDev 2025
+- Base : SQL Server
+- Sécurité : Login, profils, droits, logs
+- Reporting : Excel, PDF
+
+Pour démarrer :
+1. Installer SQL Server
+2. Exécuter HSE_DB_Production.sql
+3. Ouvrir hse2026.prj dans WinDev
+4. Compiler et exécuter
+5. Se connecter avec admin/admin123
